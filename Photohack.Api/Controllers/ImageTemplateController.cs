@@ -19,11 +19,19 @@ namespace Photohack.Api.Controllers
             _musicService = musicService;
         }
 
-        // GET api/imagetemplate
+        /// <summary>
+        /// Gets tracks (depends on the whole phrase and main words).
+        /// </summary>
+        /// <param name="phrase">The whole phrase.</param>
+        /// <param name="words">The words, separated with spaces.</param>
+        /// <returns>List of tracks.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// If phrase and words are null.
+        /// </exception>
         [HttpGet]
         public async Task<JsonResult> Get(string phrase, string words)
         {
-            if (phrase == null && words == null)
+            if (string.IsNullOrWhiteSpace(phrase) && (words == null || words.Count() == 0))
             {
                 throw new ArgumentNullException();
             }

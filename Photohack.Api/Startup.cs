@@ -5,7 +5,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Photohack.Api.Extensions;
 using Photohack.Services;
+using Swashbuckle.AspNetCore.Swagger;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Photohack.Api
 {
@@ -28,6 +31,11 @@ namespace Photohack.Api
             {
                 c.BaseAddress = new Uri("https://api.deezer.com/");
             });
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "CrazyFace api", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,6 +50,13 @@ namespace Photohack.Api
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                //c.InjectStylesheet("/swagger-ui/styles.css");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "CrazyFace");
+            });
 
             app.UseHttpsRedirection();
 
