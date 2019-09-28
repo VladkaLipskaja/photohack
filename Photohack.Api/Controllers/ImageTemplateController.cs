@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Photohack.Api.Extensions;
+using Photohack.Models;
 using Photohack.Services;
 
 namespace Photohack.Api.Controllers
@@ -33,12 +34,20 @@ namespace Photohack.Api.Controllers
         {
             if (string.IsNullOrWhiteSpace(phrase) && (words == null || words.Count() == 0))
             {
-                throw new ArgumentNullException();
+                return this.JsonApi(new MusicException(MusicErrorCode.NullArgument));
             }
 
-            var tracks = await _musicService.GetMusicLinks(phrase, words);
+            try
+            {
 
-            return this.JsonApi(tracks?.Data);
+                var tracks = await _musicService.GetMusicLinks(phrase, words);
+
+                return this.JsonApi(tracks.Data.Take(3));
+            }
+            catch (MusicException exception)
+            {
+                return this.JsonApi(exception);
+            }
         }
     }
 }

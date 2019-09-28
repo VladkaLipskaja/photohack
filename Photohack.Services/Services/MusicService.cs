@@ -25,7 +25,7 @@ namespace Photohack.Services
                 phrase = phrase.Substring(0, Math.Max(0, phrase.LastIndexOf(' ')));
             }
 
-            if (result != null)
+            if (result?.Data != null && result.Data.Count > 0)
             {
                 return result;
             }
@@ -36,14 +36,14 @@ namespace Photohack.Services
                 {
                     result = await GetTracks(word);
 
-                    if (result != null)
+                    if (result?.Data != null && result.Data.Count > 0)
                     {
                         return result;
                     }
                 }
             }
 
-            return result;
+            throw new MusicException(MusicErrorCode.NothingFound);
         }
 
         private async Task<MusicTrack> GetTracks(string phrase)
