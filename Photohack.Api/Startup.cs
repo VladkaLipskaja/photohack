@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Photohack.Api.Extensions;
+using Photohack.Models;
 using Photohack.Services;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
@@ -24,12 +25,21 @@ namespace Photohack.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var parallelDotsSection = Configuration.GetSection("ParallelDots");
+            services.Configure<ParallelDotsConfiguration>(parallelDotsSection);
+            //var parallelDotsSectionSettings = parallelDotsSection.Get<ParallelDotsConfiguration>();
+
             services.AddScoped<IMusicService, MusicService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddHttpClient("deezer", c =>
             {
                 c.BaseAddress = new Uri("https://api.deezer.com/");
+            });
+
+            services.AddHttpClient("paralleldots", c =>
+            {
+                c.BaseAddress = new Uri("https://apis.paralleldots.com/");
             });
 
             services.AddSwaggerGen(c =>

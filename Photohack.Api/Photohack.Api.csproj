@@ -18,4 +18,8 @@
     <ProjectReference Include="..\Photohack.Services\Photohack.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\" />
+  </ItemGroup>
+
 </Project>
