@@ -15,12 +15,15 @@ namespace Photohack.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment environment)
         {
             Configuration = configuration;
+            Environment = environment;
         }
 
         public IConfiguration Configuration { get; }
+
+        public IHostingEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -31,6 +34,7 @@ namespace Photohack.Api
 
             services.AddScoped<IMusicService, MusicService>();
             services.AddScoped<IEmotionService, EmotionService>();
+            services.AddScoped<IPhotoService, PhotoService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddHttpClient("deezer", c =>
@@ -41,6 +45,11 @@ namespace Photohack.Api
             services.AddHttpClient("paralleldots", c =>
             {
                 c.BaseAddress = new Uri("https://apis.paralleldots.com/");
+            });
+
+            services.AddHttpClient("photolab", c =>
+            {
+                c.BaseAddress = new Uri("http://api-soft.photolab.me/");
             });
 
             services.AddSwaggerGen(c =>

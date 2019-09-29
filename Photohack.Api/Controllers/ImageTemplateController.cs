@@ -15,11 +15,13 @@ namespace Photohack.Api.Controllers
     {
         public readonly IMusicService _musicService;
         public readonly IEmotionService _emotionService;
+        public readonly IPhotoService _photoService;
 
-        public ImageTemplateController(IMusicService musicService, IEmotionService emotionService)
+        public ImageTemplateController(IMusicService musicService, IEmotionService emotionService, IPhotoService photoService)
         {
             _musicService = musicService;
             _emotionService = emotionService;
+            _photoService = photoService;
         }
 
         /// <summary>
@@ -74,6 +76,22 @@ namespace Photohack.Api.Controllers
             {
                 return this.JsonApi(exception);
             }
+        }
+
+        [HttpGet("photo")]
+        public async Task<JsonResult> GetPhoto(int emotion)
+        {
+            //try
+            //{
+
+            byte[] bytes = new byte[2];
+             var links =    await _photoService.ProcessPhoto(emotion);
+            var result = new GetPhotoResponse
+            {
+                Links = links
+            };
+            return this.JsonApi(result);
+           // }
         }
     }
 }
