@@ -78,32 +78,21 @@ namespace Photohack.Api.Controllers
             }
         }
 
-        [HttpGet("photo")]
-        public async Task<JsonResult> GetPhoto(int emotion)
+        [HttpPost("photo")]
+        public async Task<JsonResult> GetPhoto([FromBody]GetPhotoRequest request)
         {
             //try
             //{
 
-            byte[] bytes = new byte[2];
-             var links =    await _photoService.ProcessPhoto(emotion);
+             var links =    await _photoService.GetFilter(request.Emotion, request.Photo);
             var result = new GetPhotoResponse
             {
-                Links = links
+                Links = links?.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray()
             };
             return this.JsonApi(result);
            // }
         }
 
-        [HttpGet("photo-save")]
-        public async Task<JsonResult> SavePhoto()
-        {
-            //try
-            //{
 
-            byte[] bytes = new byte[2];
-            await _photoService.SavePhoto(bytes, "");
-            return this.JsonApi();
-            // }
-        }
     }
 }

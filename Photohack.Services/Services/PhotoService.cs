@@ -21,16 +21,20 @@ namespace Photohack.Services
             _env = env;
         }
 
-        public Task<string> GetFilter(int filter, string url)
+        public async Task<string[]> GetFilter(int emotion, byte[] bytes)
         {
-            throw new NotImplementedException();
+            var name = SavePhoto(bytes);
+
+            var links = await ProcessPhoto(emotion, name);
+
+            return links;
         }
 
-        public async Task<string[]> ProcessPhoto(int emotion)
+        public async Task<string[]> ProcessPhoto(int emotion, string name)
         {
             List<string> result = new List<string>();
 
-            var url = "https://i.gyazo.com/c1d535f144c094db5806c10c03f6c118.png";
+            var url = "https://crazyfacemessenger.azurewebsites.net/images/" + name;
 
             var firstStep = url;
 
@@ -77,13 +81,10 @@ namespace Photohack.Services
             return string.Empty;
         }
 
-        public Task SavePhoto(byte[] bytes, string name)
+        public string SavePhoto(byte[] bytes)
         {
             var webRoot = _env.WebRootPath;
             var PathWithFolderName = System.IO.Path.Combine(webRoot, "images");
-
-            var webClient = new WebClient();
-            bytes = webClient.DownloadData("https://i.gyazo.com/c1d535f144c094db5806c10c03f6c118.png");
 
             Image image;
             using (MemoryStream ms = new MemoryStream(bytes))
@@ -91,7 +92,9 @@ namespace Photohack.Services
                 image = Image.FromStream(ms);
             }
 
-            image.Save(PathWithFolderName + "/ImageName.png");
+            var name = Guid.NewGuid().ToString() + ".jpg";
+
+            image.Save(PathWithFolderName + name);
 
 
             // Try to create the directory.
@@ -103,7 +106,7 @@ namespace Photohack.Services
             //File.WriteAllBytes(PathWithFolderName, image);
 
 
-            return Task.CompletedTask;
+            return name;
         }
     }
 }
