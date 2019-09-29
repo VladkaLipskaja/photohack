@@ -86,15 +86,15 @@ namespace Photohack.Services
             var webRoot = _env.WebRootPath;
             var PathWithFolderName = System.IO.Path.Combine(webRoot, "images");
 
+
+            var name = Guid.NewGuid().ToString() + ".jpg";
             Image image;
             using (MemoryStream ms = new MemoryStream(bytes))
             {
                 image = Image.FromStream(ms);
+
+                image.Save(PathWithFolderName + name);
             }
-
-            var name = Guid.NewGuid().ToString() + ".jpg";
-
-            image.Save(PathWithFolderName + name);
 
 
             // Try to create the directory.
