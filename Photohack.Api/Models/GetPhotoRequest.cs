@@ -4,6 +4,6 @@
     {
         public int Emotion { get; set; }
 
-        public byte[] Photo { get; set; }
+        public string Photo { get; set; }
     }
 }
