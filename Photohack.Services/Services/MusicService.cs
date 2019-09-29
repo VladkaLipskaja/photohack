@@ -14,11 +14,11 @@ namespace Photohack.Services
             _clientFactory = clientFactory;
         }
 
-        public async Task<MusicTrack> GetMusicLinks(string phrase, string words)
+        public async Task<MusicTrack> GetMusicLinksAsync(string phrase, string words)
         {
             MusicTrack result = null;
 
-            while (phrase?.Length > 0 && (result == null || result.Data?.Count == 0))
+            while (phrase?.Length > 0 && (result?.Data == null || result.Data.Count == 0))
             {
                 result = await GetTracks(phrase);
 

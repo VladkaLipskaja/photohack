@@ -5,6 +5,6 @@ namespace Photohack.Services
 {
     public interface IMusicService
     {
-        Task<MusicTrack> GetMusicLinks(string phrase, string words);
+        Task<MusicTrack> GetMusicLinksAsync(string phrase, string words);
     }
 }

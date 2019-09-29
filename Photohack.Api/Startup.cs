@@ -30,6 +30,7 @@ namespace Photohack.Api
             //var parallelDotsSectionSettings = parallelDotsSection.Get<ParallelDotsConfiguration>();
 
             services.AddScoped<IMusicService, MusicService>();
+            services.AddScoped<IEmotionService, EmotionService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddHttpClient("deezer", c =>

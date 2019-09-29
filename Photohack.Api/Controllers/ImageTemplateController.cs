@@ -14,10 +14,12 @@ namespace Photohack.Api.Controllers
     public class ImageTemplateController : ControllerBase
     {
         public readonly IMusicService _musicService;
+        public readonly IEmotionService _emotionService;
 
-        public ImageTemplateController(IMusicService musicService)
+        public ImageTemplateController(IMusicService musicService, IEmotionService emotionService)
         {
             _musicService = musicService;
+            _emotionService = emotionService;
         }
 
         /// <summary>
@@ -30,7 +32,7 @@ namespace Photohack.Api.Controllers
         /// If phrase and words are null.
         /// </exception>
         [HttpGet]
-        public async Task<JsonResult> Get(string phrase, string words)
+        public async Task<JsonResult> GetMusic(string phrase, string words)
         {
             if (string.IsNullOrWhiteSpace(phrase) && (words == null || words.Count() == 0))
             {
@@ -39,12 +41,36 @@ namespace Photohack.Api.Controllers
 
             try
             {
-
-                var tracks = await _musicService.GetMusicLinks(phrase, words);
+                var tracks = await _musicService.GetMusicLinksAsync(phrase, words);
 
                 return this.JsonApi(tracks.Data.Take(3));
             }
             catch (MusicException exception)
+            {
+                return this.JsonApi(exception);
+            }
+        }
+
+        [HttpGet("emotion")]
+        public async Task<JsonResult> GetEmotion(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return this.JsonApi(new EmotionException(EmotionErrorCode.NullArgument));
+            }
+
+            try
+            {
+                int emotion = await _emotionService.GetEmotionAsync(text);
+
+                var response = new GetEmotionResponse
+                {
+                    Emotion = emotion
+                };
+
+                return this.JsonApi(response);
+            }
+            catch (EmotionException exception)
             {
                 return this.JsonApi(exception);
             }
