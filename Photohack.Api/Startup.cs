@@ -64,9 +64,11 @@ namespace Photohack.Api
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                //c.InjectStylesheet("/swagger-ui/styles.css");
+                c.InjectStylesheet("/swagger-ui/styles.css");
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "CrazyFace");
             });
+
+            app.UseStaticFiles();
 
             app.UseHttpsRedirection();
 
