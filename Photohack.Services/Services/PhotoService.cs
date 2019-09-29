@@ -4,59 +4,85 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Photohack.Services
 {
+    /// <summary>
+    /// Photo service
+    /// </summary>
+    /// <seealso cref="Photohack.Services.IPhotoService" />
     public class PhotoService : IPhotoService
     {
+        /// <summary>
+        /// The client factory
+        /// </summary>
         private readonly IHttpClientFactory _clientFactory;
+
+        /// <summary>
+        /// The environment variable
+        /// </summary>
         private readonly IHostingEnvironment _env;
 
+        /// <summary>
+        /// The home images URL
+        /// </summary>
+        private const string HomeImagesUrl = "https://crazyfacemessenger.azurewebsites.net/images/";
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PhotoService"/> class.
+        /// </summary>
+        /// <param name="clientFactory">The client factory.</param>
+        /// <param name="env">The env.</param>
         public PhotoService(IHttpClientFactory clientFactory, IHostingEnvironment env)
         {
             _clientFactory = clientFactory;
             _env = env;
         }
 
+        /// <summary>
+        /// Gets the filter.
+        /// </summary>
+        /// <param name="emotion">The emotion.</param>
+        /// <param name="bytes">The bytes (image).</param>
+        /// <returns>
+        /// Links of photos with filters.
+        /// </returns>
         public async Task<string[]> GetFilter(int emotion, byte[] bytes)
         {
             var name = SavePhoto(bytes);
 
-            var links = await ProcessPhoto(emotion, name);
+            var links = await ProcessPhotoAsync(emotion, name);
 
             return links;
         }
 
-        public async Task<string[]> ProcessPhoto(int emotion, string name)
+        private async Task<string[]> ProcessPhotoAsync(int emotion, string name)
         {
             List<string> result = new List<string>();
 
-            var url = "https://crazyfacemessenger.azurewebsites.net/images/" + name;
-
-            var firstStep = url;
+            var url = HomeImagesUrl + name;
 
             if (PhotoEmotionTemplateConfigs.EmotionFirstTemplate.ContainsKey(emotion))
             {
-                firstStep = await GetEffectPhoto(firstStep, PhotoEmotionTemplateConfigs.EmotionFirstTemplate[emotion]);
+                url = await GetEffectPhoto(url, PhotoEmotionTemplateConfigs.EmotionFirstTemplate[emotion]);
 
-                result.Add(firstStep);
+                result.Add(url);
             }
 
-            var secondStep = firstStep;
+            var additionalFilter = url;
 
             if (PhotoEmotionTemplateConfigs.EmotionLastTemplate.ContainsKey(emotion))
             {
-                secondStep = await GetEffectPhoto(secondStep, PhotoEmotionTemplateConfigs.EmotionLastTemplate[emotion]);
+                additionalFilter = await GetEffectPhoto(additionalFilter, PhotoEmotionTemplateConfigs.EmotionLastTemplate[emotion]);
 
-                result.Add(secondStep);
+                result.Add(additionalFilter);
             }
 
-            var defaultUrl = await GetEffectPhoto(secondStep, PhotoEmotionTemplateConfigs.Default);
+            var frameFilter = await GetEffectPhoto(additionalFilter, PhotoEmotionTemplateConfigs.Default);
 
-            result.Add(defaultUrl);
+            result.Add(frameFilter);
 
             return result.ToArray();
         }
@@ -74,18 +100,16 @@ namespace Photohack.Services
 
             if (response.IsSuccessStatusCode)
             {
-
                 return await response.Content.ReadAsStringAsync();
             }
 
             return string.Empty;
         }
 
-        public string SavePhoto(byte[] bytes)
+        private string SavePhoto(byte[] bytes)
         {
             var webRoot = _env.WebRootPath;
             var PathWithFolderName = System.IO.Path.Combine(webRoot, "images");
-
 
             var name = Guid.NewGuid().ToString() + ".jpg";
             Image image;
@@ -95,16 +119,6 @@ namespace Photohack.Services
 
                 image.Save(PathWithFolderName + "\\" + name);
             }
-
-
-            // Try to create the directory.
-            //DirectoryInfo di = Directory.CreateDirectory(PathWithFolderName + "\\" + Guid.NewGuid() + ".jpg");
-
-
-            //string Base64String = eventMaster.BannerImage.Replace("data:image/png;base64,", "");
-
-            //File.WriteAllBytes(PathWithFolderName, image);
-
 
             return name;
         }
