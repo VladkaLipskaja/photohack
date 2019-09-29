@@ -13,19 +13,43 @@ using System.Linq;
 
 namespace Photohack.Api
 {
+    /// <summary>
+    /// Startup class
+    /// </summary>
     public class Startup
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Startup"/> class.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="environment">The environment.</param>
         public Startup(IConfiguration configuration, IHostingEnvironment environment)
         {
             Configuration = configuration;
             Environment = environment;
         }
 
+        /// <summary>
+        /// Gets the configuration.
+        /// </summary>
+        /// <value>
+        /// The configuration.
+        /// </value>
         public IConfiguration Configuration { get; }
 
+        /// <summary>
+        /// Gets the environment.
+        /// </summary>
+        /// <value>
+        /// The environment.
+        /// </value>
         public IHostingEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
+        /// <summary>
+        /// Configures the services.
+        /// </summary>
+        /// <param name="services">The services.</param>
         public void ConfigureServices(IServiceCollection services)
         {
             var parallelDotsSection = Configuration.GetSection("ParallelDots");
@@ -59,6 +83,11 @@ namespace Photohack.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// Configures the specified application.
+        /// </summary>
+        /// <param name="app">The application.</param>
+        /// <param name="env">The env.</param>
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())

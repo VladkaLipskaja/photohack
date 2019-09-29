@@ -1,9 +1,9 @@
 ﻿namespace Photohack.Models
 {
     /// <summary>
-    /// Music error code enum
+    /// Photo error code
     /// </summary>
-    public enum MusicErrorCode
+    public enum PhotoErrorCode
     {
         /// <summary>
         /// The null argument

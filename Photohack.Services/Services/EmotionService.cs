@@ -58,7 +58,7 @@ namespace Photohack.Services
 
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadAsAsync<EmotionResponse>();
+                var result = await response.Content.ReadAsAsync<EmotionStatistics>();
 
                 if (result?.Emotion == null)
                 {

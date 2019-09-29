@@ -9,14 +9,35 @@ using Photohack.Services;
 
 namespace Photohack.Api.Controllers
 {
+    /// <summary>
+    /// Image template controller
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
     [Route("api/[controller]")]
     [ApiController]
     public class ImageTemplateController : ControllerBase
     {
+        /// <summary>
+        /// The music service
+        /// </summary>
         public readonly IMusicService _musicService;
+
+        /// <summary>
+        /// The emotion service
+        /// </summary>
         public readonly IEmotionService _emotionService;
+
+        /// <summary>
+        /// The photo service
+        /// </summary>
         public readonly IPhotoService _photoService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImageTemplateController"/> class.
+        /// </summary>
+        /// <param name="musicService">The music service.</param>
+        /// <param name="emotionService">The emotion service.</param>
+        /// <param name="photoService">The photo service.</param>
         public ImageTemplateController(IMusicService musicService, IEmotionService emotionService, IPhotoService photoService)
         {
             _musicService = musicService;
@@ -53,6 +74,13 @@ namespace Photohack.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Gets the emotion.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <returns>
+        /// The closest emotion
+        /// </returns>
         [HttpGet("emotion")]
         public async Task<JsonResult> GetEmotion(string text)
         {
@@ -81,17 +109,19 @@ namespace Photohack.Api.Controllers
         [HttpPost("photo")]
         public async Task<JsonResult> GetPhoto([FromBody]GetPhotoRequest request)
         {
-            //try
-            //{
-            var links =    await _photoService.GetFilter(request.Emotion, request.Photo);
+            if (request?.Photo == null)
+            {
+                return this.JsonApi(new PhotoException(PhotoErrorCode.NullArgument));
+            }
+
+            var links = await _photoService.GetFilter(request.Emotion, request.Photo);
+
             var result = new GetPhotoResponse
             {
                 Links = links?.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray()
             };
+
             return this.JsonApi(result);
-           // }
         }
-
-
     }
 }
