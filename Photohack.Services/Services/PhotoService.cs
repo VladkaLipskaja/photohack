@@ -93,7 +93,7 @@ namespace Photohack.Services
             {
                 image = Image.FromStream(ms);
 
-                image.Save(PathWithFolderName + name);
+                image.Save(PathWithFolderName + "\\" + name);
             }
 
 
