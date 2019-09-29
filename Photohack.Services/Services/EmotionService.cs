@@ -50,7 +50,7 @@ namespace Photohack.Services
             var keys = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>(EmotionApiConfigs.ApiKeyName, _configuration.ApiKey),
-                new KeyValuePair<string, string>(EmotionApiConfigs.TextName, text)
+                new KeyValuePair<string, string>(EmotionApiConfigs.TextKeyName, text)
             };
 
             var request = new HttpRequestMessage(HttpMethod.Post, EmotionApiConfigs.RequestUri) { Content = new FormUrlEncodedContent(keys) };

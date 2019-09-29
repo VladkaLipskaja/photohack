@@ -58,6 +58,14 @@ namespace Photohack.Services
             return links;
         }
 
+        /// <summary>
+        /// Processes the photo asynchronously.
+        /// </summary>
+        /// <param name="emotion">The emotion.</param>
+        /// <param name="name">The name.</param>
+        /// <returns>
+        /// Array of links
+        /// </returns>
         private async Task<string[]> ProcessPhotoAsync(int emotion, string name)
         {
             List<string> result = new List<string>();
@@ -66,7 +74,7 @@ namespace Photohack.Services
 
             if (PhotoEmotionTemplateConfigs.EmotionFirstTemplate.ContainsKey(emotion))
             {
-                url = await GetEffectPhoto(url, PhotoEmotionTemplateConfigs.EmotionFirstTemplate[emotion]);
+                url = await GetEffectPhotoAsync(url, PhotoEmotionTemplateConfigs.EmotionFirstTemplate[emotion]);
 
                 result.Add(url);
             }
@@ -75,28 +83,38 @@ namespace Photohack.Services
 
             if (PhotoEmotionTemplateConfigs.EmotionLastTemplate.ContainsKey(emotion))
             {
-                additionalFilter = await GetEffectPhoto(additionalFilter, PhotoEmotionTemplateConfigs.EmotionLastTemplate[emotion]);
+                additionalFilter = await GetEffectPhotoAsync(additionalFilter, PhotoEmotionTemplateConfigs.EmotionLastTemplate[emotion]);
 
                 result.Add(additionalFilter);
             }
 
-            var frameFilter = await GetEffectPhoto(additionalFilter, PhotoEmotionTemplateConfigs.Default);
+            var frameFilter = await GetEffectPhotoAsync(additionalFilter, PhotoEmotionTemplateConfigs.Default);
 
             result.Add(frameFilter);
 
             return result.ToArray();
         }
 
-        private async Task<string> GetEffectPhoto(string url, int id)
+        /// <summary>
+        /// Gets the effect photo asynchronously.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <param name="id">The identifier.</param>
+        /// <returns>
+        /// The link to a new photo.
+        /// </returns>
+        private async Task<string> GetEffectPhotoAsync(string url, int id)
         {
             var client = _clientFactory.CreateClient(PhotoApiConfigs.ClientName);
 
-            var nvc = new List<KeyValuePair<string, string>>();
-            nvc.Add(new KeyValuePair<string, string>("image_url[1]", url));
-            nvc.Add(new KeyValuePair<string, string>("template_name", id.ToString()));
+            var keys = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>(PhotoApiConfigs.ImageUrlKeyName, url),
+                new KeyValuePair<string, string>(PhotoApiConfigs.TemplateKeyName, id.ToString())
+            };
 
-            var req = new HttpRequestMessage(HttpMethod.Post, PhotoApiConfigs.RequestUri) { Content = new FormUrlEncodedContent(nvc) };
-            var response = await client.SendAsync(req);
+            var request = new HttpRequestMessage(HttpMethod.Post, PhotoApiConfigs.RequestUri) { Content = new FormUrlEncodedContent(keys) };
+            var response = await client.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -106,10 +124,17 @@ namespace Photohack.Services
             return string.Empty;
         }
 
+        /// <summary>
+        /// Saves the photo.
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <returns>
+        /// Name of photo.
+        /// </returns>
         private string SavePhoto(byte[] bytes)
         {
             var webRoot = _env.WebRootPath;
-            var PathWithFolderName = System.IO.Path.Combine(webRoot, "images");
+            var PathWithFolderName = System.IO.Path.Combine(webRoot, "images\\");
 
             var name = Guid.NewGuid().ToString() + ".jpg";
             Image image;
@@ -117,7 +142,7 @@ namespace Photohack.Services
             {
                 image = Image.FromStream(ms);
 
-                image.Save(PathWithFolderName + "\\" + name);
+                image.Save(PathWithFolderName + name);
             }
 
             return name;

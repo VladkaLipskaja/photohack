@@ -6,6 +6,6 @@
         public const string RequestUri = "v5/emotion";
         public const string ApplicationForm = "application/x-www-form-urlencoded";
         public const string ApiKeyName = "api_key";
-        public const string TextName = "text";
+        public const string TextKeyName = "text";
     }
 }
