@@ -83,8 +83,7 @@ namespace Photohack.Api.Controllers
         {
             //try
             //{
-            byte[] bytes = Convert.FromBase64String(request.Photo);
-            var links =    await _photoService.GetFilter(request.Emotion, bytes);
+            var links =    await _photoService.GetFilter(request.Emotion, request.Photo);
             var result = new GetPhotoResponse
             {
                 Links = links?.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray()
