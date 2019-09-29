@@ -2,7 +2,9 @@
 using Photohack.Models;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -75,20 +77,30 @@ namespace Photohack.Services
             return string.Empty;
         }
 
-        public Task SavePhoto(byte[] image, string name)
+        public Task SavePhoto(byte[] bytes, string name)
         {
-
             var webRoot = _env.WebRootPath;
             var PathWithFolderName = System.IO.Path.Combine(webRoot, "images");
 
+            var webClient = new WebClient();
+            bytes = webClient.DownloadData("https://i.gyazo.com/c1d535f144c094db5806c10c03f6c118.png");
+
+            Image image;
+            using (MemoryStream ms = new MemoryStream(bytes))
+            {
+                image = Image.FromStream(ms);
+            }
+
+            image.Save(PathWithFolderName + "/ImageName.png");
+
 
             // Try to create the directory.
-            DirectoryInfo di = Directory.CreateDirectory(PathWithFolderName + "\\" + Guid.NewGuid() + ".jpg");
+            //DirectoryInfo di = Directory.CreateDirectory(PathWithFolderName + "\\" + Guid.NewGuid() + ".jpg");
 
 
             //string Base64String = eventMaster.BannerImage.Replace("data:image/png;base64,", "");
 
-            File.WriteAllBytes(PathWithFolderName, image);
+            //File.WriteAllBytes(PathWithFolderName, image);
 
 
             return Task.CompletedTask;

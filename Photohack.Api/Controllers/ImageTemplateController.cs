@@ -93,5 +93,17 @@ namespace Photohack.Api.Controllers
             return this.JsonApi(result);
            // }
         }
+
+        [HttpGet("photo-save")]
+        public async Task<JsonResult> SavePhoto()
+        {
+            //try
+            //{
+
+            byte[] bytes = new byte[2];
+            await _photoService.SavePhoto(bytes, "");
+            return this.JsonApi();
+            // }
+        }
     }
 }
